@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Tones</title>
+</head>
+<body>
+    <h1>Play Tones</h1>
+    <form id="toneForm">
+        <label for="steps">Steps:</label>
+        <input type="number" id="steps" name="steps" required><br><br>
+        <label for="seconds_duration">Seconds Duration:</label>
+        <input type="number" id="seconds_duration" name="seconds_duration" required><br><br>
+        <button type="submit">Start</button>
+    </form>
+
+    <script>
+        function playTone(frequency, duration, volume = 0.3, sampleRate = 44100) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = volume;
+            gainNode.connect(audioContext.destination);
+
+            const oscillator = audioContext.createOscillator();
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            oscillator.connect(gainNode);
+
+            oscillator.start();
+            setTimeout(() => {
+                oscillator.stop();
+                audioContext.close();
+            }, duration * 1000);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function singleCycle(steps, numCycles, initialFrequency, halfStepFactor, waitTime) {
+            for (let i = 0; i < numCycles; i++) {
+                console.log("cycle:", i);
+                let baseFrequency = initialFrequency;
+
+                for (let j = 0; j < steps; j++) {
+                    console.log("counting:", j + 1);
+
+                    playTone(baseFrequency, 0.1, 0.3);
+                    await sleep(waitTime * 1000);
+
+                    playTone(baseFrequency, 0.1, 0.15);
+                    await sleep(waitTime * 1000);
+
+                    baseFrequency /= halfStepFactor;
+                }
+            }
+        }
+
+        document.getElementById('toneForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const steps = parseInt(document.getElementById('steps').value);
+            const secondsDuration = parseInt(document.getElementById('seconds_duration').value);
+            const secondsCycles = Math.floor(secondsDuration / steps);
+            const initialFrequency = 2000;
+            const halfStepFactor = 1.05946;
+            const waitTime = 0.5;
+
+            singleCycle(steps, secondsCycles, initialFrequency, halfStepFactor, waitTime);
+        });
+    </script>
+</body>
+</html>
