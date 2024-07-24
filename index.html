@@ -22,9 +22,9 @@
     <script>
         let isRunning = false;
         let steps, secondsDuration, initialFrequency, halfStepFactor, waitTime, secondsCycles;
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        function playTone(frequency, duration, volume = 0.3, sampleRate = 44100) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(frequency, duration, volume = 0.3) {
             const gainNode = audioContext.createGain();
             gainNode.gain.value = volume;
             gainNode.connect(audioContext.destination);
@@ -37,7 +37,7 @@
             oscillator.start();
             setTimeout(() => {
                 oscillator.stop();
-                audioContext.close();
+                gainNode.disconnect();
             }, duration * 1000);
         }
 
