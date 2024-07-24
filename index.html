@@ -14,8 +14,15 @@
         <input type="number" id="seconds_duration" name="seconds_duration" required><br><br>
         <button type="submit">Start</button>
     </form>
+    <br>
+    <button id="stopButton">Stop</button>
+    <button id="upButton">Up</button>
+    <button id="downButton">Down</button>
 
     <script>
+        let isRunning = false;
+        let steps, secondsDuration, initialFrequency, halfStepFactor, waitTime, secondsCycles;
+
         function playTone(frequency, duration, volume = 0.3, sampleRate = 44100) {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const gainNode = audioContext.createGain();
@@ -38,12 +45,14 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        async function singleCycle(steps, numCycles, initialFrequency, halfStepFactor, waitTime) {
-            for (let i = 0; i < numCycles; i++) {
+        async function singleCycle() {
+            for (let i = 0; i < secondsCycles; i++) {
+                if (!isRunning) break;
                 console.log("cycle:", i);
                 let baseFrequency = initialFrequency;
 
                 for (let j = 0; j < steps; j++) {
+                    if (!isRunning) break;
                     console.log("counting:", j + 1);
 
                     playTone(baseFrequency, 0.1, 0.3);
@@ -59,14 +68,31 @@
 
         document.getElementById('toneForm').addEventListener('submit', function (event) {
             event.preventDefault();
-            const steps = parseInt(document.getElementById('steps').value);
-            const secondsDuration = parseInt(document.getElementById('seconds_duration').value);
-            const secondsCycles = Math.floor(secondsDuration / steps);
-            const initialFrequency = 2000;
-            const halfStepFactor = 1.05946;
-            const waitTime = 0.5;
+            steps = parseInt(document.getElementById('steps').value);
+            secondsDuration = parseInt(document.getElementById('seconds_duration').value);
+            secondsCycles = Math.floor(secondsDuration / steps);
+            initialFrequency = 2000;
+            halfStepFactor = 1.05946;
+            waitTime = 0.5;
 
-            singleCycle(steps, secondsCycles, initialFrequency, halfStepFactor, waitTime);
+            isRunning = true;
+            singleCycle();
+        });
+
+        document.getElementById('stopButton').addEventListener('click', function () {
+            isRunning = false;
+        });
+
+        document.getElementById('upButton').addEventListener('click', function () {
+            steps += 1;
+            document.getElementById('steps').value = steps;
+        });
+
+        document.getElementById('downButton').addEventListener('click', function () {
+            if (steps > 1) {
+                steps -= 1;
+                document.getElementById('steps').value = steps;
+            }
         });
     </script>
 </body>
