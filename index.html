@@ -36,14 +36,14 @@
             
         }
         button {
-            font-size: 1.3m;
+            font-size: 2m;
             padding: 10px;
         }
         @media (max-width: 750px) {
             h1 {
                 font-size: 2em;
             }
-            label, input, button {
+            label, input {
                 font-size: 1.3em;
                 padding: 8px;
             }
@@ -54,9 +54,9 @@
     <h1>Play Tones Update</h1>
     <form id="toneForm">
         <label for="steps">Steps:</label>
-        <input type="number" id="steps" name="steps" required><br><br>
-        <label for="seconds_duration">Seconds Duration:</label>
-        <input type="number" id="seconds_duration" name="seconds_duration" required><br><br>
+        <input type="number" id="steps" name="steps" required value="10"><br><br>
+        <label for="seconds_duration" >Seconds Duration:</label>
+        <input type="number" id="seconds_duration" name="seconds_duration" required value="1500"><br><br>
         <button type="submit">Start</button>
     </form>
     <br>
